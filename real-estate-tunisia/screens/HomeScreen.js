@@ -27,6 +27,11 @@ const HomeScreen = () => {
         title="Liste des Biens"
         onPress={() => navigation.navigate('PropertyList')}
       />
+      <Button
+        title="Contact"
+        onPress={() => navigation.navigate('Contact')}
+      />
+
     </View>
   );
 };

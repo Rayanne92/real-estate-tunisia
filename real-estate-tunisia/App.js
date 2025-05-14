@@ -10,6 +10,8 @@ import PriceCheckScreen from './screens/PriceCheckScreen';
 import AddPropertyScreen from './screens/AddPropertyScreen';
 import PropertyListScreen from './screens/PropertyListScreen';
 import PriceTrackingScreen from './screens/PriceTrackingScreen'; // Ajout de l'écran de suivi des prix
+import ContactScreen from './screens/ContactScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,8 @@ export default function App() {
           <Stack.Screen name="AddProperty" component={AddPropertyScreen} />
           <Stack.Screen name="PropertyList" component={PropertyListScreen} />
           <Stack.Screen name="PriceTracking" component={PriceTrackingScreen} />
+          <Stack.Screen name="Contact" component={ContactScreen} />
+
         </Stack.Navigator>
       </SafeAreaView>
     </NavigationContainer>
