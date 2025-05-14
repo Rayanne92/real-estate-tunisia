@@ -11,3 +11,5 @@ npm install react-native-svg
 npx expo install react-native-maps
 
 npm install @react-native-picker/picker
+
+npm install react-native-dropdown-picker
