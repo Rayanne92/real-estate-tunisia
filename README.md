@@ -7,3 +7,5 @@ npm install react-native-gesture-handler react-native-reanimated react-native-sa
 npm install react-native-chart-kit
 
 npm install react-native-svg
+
+npx expo install react-native-maps

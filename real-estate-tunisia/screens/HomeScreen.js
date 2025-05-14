@@ -31,6 +31,10 @@ const HomeScreen = () => {
         title="Contact"
         onPress={() => navigation.navigate('Contact')}
       />
+      <Button
+        title="Carte des Biens"
+        onPress={() => navigation.navigate('Map')}
+      />
 
     </View>
   );
