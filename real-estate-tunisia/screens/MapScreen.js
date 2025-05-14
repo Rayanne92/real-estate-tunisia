@@ -1,13 +1,13 @@
 // screens/MapScreen.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 const MapScreen = () => {
   const [loading, setLoading] = useState(true);
-  const [selectedProperty, setSelectedProperty] = useState(null); // Pour stocker la propriété sélectionnée
-  const mapRef = useRef(null); // Référence de la carte pour l'animation
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const mapRef = useRef(null);
 
   const properties = [
     {
@@ -16,8 +16,9 @@ const MapScreen = () => {
       latitude: 36.8065,
       longitude: 10.1815,
       gouvernorat: 'Tunis',
-      description: 'Belle maison au cœur de Tunis avec jardin et terrasse.',
+      description: 'Belle maison au cœur de Tunis avec jardin.',
       price: '250 000 TND',
+      type: 'maison',
     },
     {
       id: 2,
@@ -25,103 +26,149 @@ const MapScreen = () => {
       latitude: 34.7406,
       longitude: 10.7603,
       gouvernorat: 'Sfax',
-      description: 'Appartement moderne à Sfax, avec vue sur la mer.',
+      description: 'Appartement moderne à Sfax.',
       price: '150 000 TND',
+      type: 'appartement',
     },
     {
       id: 3,
-      title: 'Villa à Nabeul',
-      latitude: 36.4576,
-      longitude: 10.7408,
+      title: 'Terrain à Nabeul',
+      latitude: 36.4510,
+      longitude: 10.7356,
       gouvernorat: 'Nabeul',
-      description: 'Grande villa avec piscine à Nabeul.',
-      price: '450 000 TND',
+      description: 'Terrain constructible à Nabeul.',
+      price: '100 000 TND',
+      type: 'terrain',
     },
     {
       id: 4,
-      title: 'Studio à Monastir',
-      latitude: 35.7622,
-      longitude: 10.8280,
-      gouvernorat: 'Monastir',
-      description: 'Studio cosy à Monastir, idéal pour les étudiants.',
-      price: '80 000 TND',
-    },
-    {
-      id: 5,
-      title: 'Appartement à Bizerte',
-      latitude: 37.2750,
-      longitude: 9.8730,
-      gouvernorat: 'Bizerte',
-      description: 'Appartement avec vue sur le port de Bizerte.',
-      price: '200 000 TND',
-    },
-    {
-      id: 6,
-      title: 'Maison à Sousse',
+      title: 'Local à Sousse',
       latitude: 35.8256,
-      longitude: 10.6361,
+      longitude: 10.6084,
       gouvernorat: 'Sousse',
-      description: 'Maison spacieuse avec jardin à Sousse.',
+      description: 'Local commercial spacieux à Sousse.',
       price: '300 000 TND',
+      type: 'local',
     },
     {
-      id: 7,
-      title: 'Penthouse à Hammamet',
-      latitude: 36.4025,
-      longitude: 10.6186,
-      gouvernorat: 'Nabeul',
-      description: 'Penthouse luxueux à Hammamet avec vue imprenable.',
-      price: '600 000 TND',
+    id: 5,
+    title: 'Maison à Djerba',
+    latitude: 33.8076,
+    longitude: 10.8452,
+    gouvernorat: 'Medenine',
+    description: 'Charmante maison traditionnelle à Djerba.',
+    price: '180 000 TND',
+    type: 'maison',
     },
     {
-      id: 8,
-      title: 'Appartement à Kairouan',
-      latitude: 35.6743,
-      longitude: 9.8766,
-      gouvernorat: 'Kairouan',
-      description: 'Appartement au centre de Kairouan, proche des commerces.',
-      price: '120 000 TND',
+    id: 6,
+    title: 'Terrain à Kairouan',
+    latitude: 35.6781,
+    longitude: 10.0963,
+    gouvernorat: 'Kairouan',
+    description: 'Terrain agricole bien situé.',
+    price: '70 000 TND',
+    type: 'terrain',
     },
     {
-      id: 9,
-      title: 'Maison à Gabès',
-      latitude: 33.8830,
-      longitude: 10.1000,
-      gouvernorat: 'Gabès',
-      description: 'Maison familiale à Gabès avec un grand jardin.',
-      price: '180 000 TND',
+    id: 7,
+    title: 'Appartement à Bizerte',
+    latitude: 37.2744,
+    longitude: 9.8739,
+    gouvernorat: 'Bizerte',
+    description: 'Appartement avec vue sur la mer.',
+    price: '200 000 TND',
+    type: 'appartement',
     },
     {
-      id: 10,
-      title: 'Villa à Tozeur',
-      latitude: 33.9181,
-      longitude: 8.1266,
-      gouvernorat: 'Tozeur',
-      description: 'Villa avec piscine et vue sur le désert à Tozeur.',
-      price: '550 000 TND',
+    id: 8,
+    title: 'Local à Gabès',
+    latitude: 33.8818,
+    longitude: 10.0982,
+    gouvernorat: 'Gabès',
+    description: 'Local commercial bien placé.',
+    price: '250 000 TND',
+    type: 'local',
     },
+    {
+    id: 9,
+    title: 'Maison à Monastir',
+    latitude: 35.7770,
+    longitude: 10.8262,
+    gouvernorat: 'Monastir',
+    description: 'Maison avec piscine à Monastir.',
+    price: '320 000 TND',
+    type: 'maison',
+    },
+    {
+    id: 10,
+    title: 'Terrain à Tataouine',
+    latitude: 32.9297,
+    longitude: 10.4518,
+    gouvernorat: 'Tataouine',
+    description: 'Grand terrain dans le sud tunisien.',
+    price: '60 000 TND',
+    type: 'terrain',
+    },
+    {
+    id: 11,
+    title: 'Appartement à Ariana',
+    latitude: 36.8665,
+    longitude: 10.1647,
+    gouvernorat: 'Ariana',
+    description: 'Appartement familial à Ariana.',
+    price: '175 000 TND',
+    type: 'appartement',
+    },
+    {
+    id: 12,
+    title: 'Local à Gafsa',
+    latitude: 34.4250,
+    longitude: 8.7842,
+    gouvernorat: 'Gafsa',
+    description: 'Local spacieux au centre-ville.',
+    price: '210 000 TND',
+    type: 'local',
+    },
+
   ];
 
   useEffect(() => {
-    setLoading(false); // Suppression du chargement, plus besoin de récupérer les données GeoJSON
+    setLoading(false);
   }, []);
 
   const handleMarkerPress = (property) => {
-    setSelectedProperty(property); // Affiche les détails de la propriété sélectionnée
-
-    // Zoom sur la position du marqueur
+    setSelectedProperty(property);
     if (mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: property.latitude,
-        longitude: property.longitude,
-        latitudeDelta: 0.005, // Niveau de zoom (ajuste selon tes besoins)
-        longitudeDelta: 0.005, // Niveau de zoom (ajuste selon tes besoins)
-      }, 1000); // Animation sur 1 seconde
+      mapRef.current.animateToRegion(
+        {
+          latitude: property.latitude,
+          longitude: property.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        800
+      );
     }
   };
 
   const closeModal = () => {
-    setSelectedProperty(null); // Ferme le modal en réinitialisant la propriété sélectionnée
+    setSelectedProperty(null);
+  };
+
+  const getIconByType = (type) => {
+    switch (type) {
+      case 'maison':
+        return require('../assets/icons/house.png');
+      case 'appartement':
+        return require('../assets/icons/apartment.png');
+      case 'terrain':
+        return require('../assets/icons/land.png');
+      case 'local':
+        return require('../assets/icons/shop.png');
+      default:
+        return require('../assets/icons/house.png');
+    }
   };
 
   return (
@@ -130,7 +177,7 @@ const MapScreen = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <MapView
-          ref={mapRef} // Attache la référence à la carte
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: 34.8,
@@ -138,19 +185,25 @@ const MapScreen = () => {
             latitudeDelta: 5,
             longitudeDelta: 5,
           }}
-          mapType="satellite" // Vue satellite
+          mapType="satellite"
         >
-          {properties.map(property => (
+          {properties.map((property) => (
             <Marker
               key={property.id}
               coordinate={{
                 latitude: property.latitude,
                 longitude: property.longitude,
               }}
-              title={property.title}
-              description={`Gouvernorat: ${property.gouvernorat}`}
-              onPress={() => handleMarkerPress(property)} // Appel lors du clic
-            />
+              onPress={() => handleMarkerPress(property)}
+            >
+              <View style={styles.iconContainer}>
+                <Image
+                  source={getIconByType(property.type)}
+                  style={styles.iconImage}
+                  resizeMode="contain"
+                />
+              </View>
+            </Marker>
           ))}
         </MapView>
       )}
@@ -172,12 +225,28 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   map: {
     flex: 1,
     width: '100%',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
+  iconImage: {
+    width: 28,
+    height: 28,
   },
   modalContent: {
     position: 'absolute',
@@ -212,6 +281,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 5,
+    alignSelf: 'flex-end',
   },
   closeButtonText: {
     color: 'white',
