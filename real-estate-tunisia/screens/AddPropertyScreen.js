@@ -1,15 +1,7 @@
 // screens/AddPropertyScreen.js
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 const AddPropertyScreen = () => {
   const [propertyType, setPropertyType] = useState('Maison');
@@ -38,27 +30,17 @@ const AddPropertyScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>📌 Ajouter un Bien en Tunisie</Text>
-      <Text style={styles.subtitle}>
-        Contribuez à la transparence du marché immobilier 🇹🇳
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Ajouter un Bien</Text>
 
-      <Text style={styles.label}>Type de bien</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={propertyType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setPropertyType(itemValue)}
-        >
-          <Picker.Item label="Maison" value="Maison" />
-          <Picker.Item label="Terrain" value="Terrain" />
-          <Picker.Item label="Local commercial" value="Local" />
-          <Picker.Item label="Appartement" value="Appartement" />
-        </Picker>
-      </View>
+      <Text>Type de bien :</Text>
+      <TextInput
+        style={styles.input}
+        value={propertyType}
+        onChangeText={setPropertyType}
+      />
 
-      <Text style={styles.label}>Prix (en TND)</Text>
+      <Text>Prix (en TND) :</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
@@ -67,7 +49,7 @@ const AddPropertyScreen = () => {
         onChangeText={setPrice}
       />
 
-      <Text style={styles.label}>Surface (m²)</Text>
+      <Text>Surface (m²) :</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
@@ -76,7 +58,7 @@ const AddPropertyScreen = () => {
         onChangeText={setSurface}
       />
 
-      <Text style={styles.label}>Ville</Text>
+      <Text>Ville :</Text>
       <TextInput
         style={styles.input}
         placeholder="Ex : Sfax, Nabeul, etc."
@@ -84,7 +66,7 @@ const AddPropertyScreen = () => {
         onChangeText={setCity}
       />
 
-      <Text style={styles.label}>Lien de l’annonce (si applicable)</Text>
+      <Text>Lien de l’annonce (si applicable) :</Text>
       <TextInput
         style={styles.input}
         placeholder="Ex : lien Tayara ou Facebook"
@@ -92,7 +74,7 @@ const AddPropertyScreen = () => {
         onChangeText={setLink}
       />
 
-      <Text style={styles.label}>Localisation du bien</Text>
+      <Text>Localisation du bien :</Text>
       <TextInput
         style={styles.input}
         placeholder="Adresse ou lien Google Maps"
@@ -100,68 +82,28 @@ const AddPropertyScreen = () => {
         onChangeText={setLocation}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleAddProperty}>
-        <Text style={styles.buttonText}>✅ Enregistrer le bien</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      <Button title="Enregistrer le bien" onPress={handleAddProperty} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
-    backgroundColor: '#FFF5F5',
-    flexGrow: 1,
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#C72C41',
+    fontSize: 24,
     textAlign: 'center',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#555',
-    textAlign: 'center',
-    marginBottom: 25,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 5,
-    fontWeight: '600',
-    color: '#444',
+    marginBottom: 20,
   },
   input: {
-    backgroundColor: '#fff',
+    height: 40,
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 15,
-  },
-  pickerWrapper: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 15,
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  button: {
-    backgroundColor: '#C72C41',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
+    marginBottom: 20,
+    paddingLeft: 10,
   },
 });
 
