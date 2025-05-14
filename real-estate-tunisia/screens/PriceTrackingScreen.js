@@ -1,7 +1,8 @@
 // screens/PriceTrackingScreen.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Picker, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 
