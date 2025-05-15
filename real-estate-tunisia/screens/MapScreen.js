@@ -1,145 +1,57 @@
-// screens/MapScreen.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import axios from 'axios';
 
 const MapScreen = () => {
   const [loading, setLoading] = useState(true);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [properties, setProperties] = useState([]);
   const mapRef = useRef(null);
 
-  const properties = [
-    {
-      id: 1,
-      title: 'Maison à Tunis',
-      latitude: 36.8065,
-      longitude: 10.1815,
-      gouvernorat: 'Tunis',
-      description: 'Belle maison au cœur de Tunis avec jardin.',
-      price: '250 000 TND',
-      type: 'maison',
-    },
-    {
-      id: 2,
-      title: 'Appartement à Sfax',
-      latitude: 34.7406,
-      longitude: 10.7603,
-      gouvernorat: 'Sfax',
-      description: 'Appartement moderne à Sfax.',
-      price: '150 000 TND',
-      type: 'appartement',
-    },
-    {
-      id: 3,
-      title: 'Terrain à Nabeul',
-      latitude: 36.4510,
-      longitude: 10.7356,
-      gouvernorat: 'Nabeul',
-      description: 'Terrain constructible à Nabeul.',
-      price: '100 000 TND',
-      type: 'terrain',
-    },
-    {
-      id: 4,
-      title: 'Local à Sousse',
-      latitude: 35.8256,
-      longitude: 10.6084,
-      gouvernorat: 'Sousse',
-      description: 'Local commercial spacieux à Sousse.',
-      price: '300 000 TND',
-      type: 'local',
-    },
-    {
-    id: 5,
-    title: 'Maison à Djerba',
-    latitude: 33.8076,
-    longitude: 10.8452,
-    gouvernorat: 'Medenine',
-    description: 'Charmante maison traditionnelle à Djerba.',
-    price: '180 000 TND',
-    type: 'maison',
-    },
-    {
-    id: 6,
-    title: 'Terrain à Kairouan',
-    latitude: 35.6781,
-    longitude: 10.0963,
-    gouvernorat: 'Kairouan',
-    description: 'Terrain agricole bien situé.',
-    price: '70 000 TND',
-    type: 'terrain',
-    },
-    {
-    id: 7,
-    title: 'Appartement à Bizerte',
-    latitude: 37.2744,
-    longitude: 9.8739,
-    gouvernorat: 'Bizerte',
-    description: 'Appartement avec vue sur la mer.',
-    price: '200 000 TND',
-    type: 'appartement',
-    },
-    {
-    id: 8,
-    title: 'Local à Gabès',
-    latitude: 33.8818,
-    longitude: 10.0982,
-    gouvernorat: 'Gabès',
-    description: 'Local commercial bien placé.',
-    price: '250 000 TND',
-    type: 'local',
-    },
-    {
-    id: 9,
-    title: 'Maison à Monastir',
-    latitude: 35.7770,
-    longitude: 10.8262,
-    gouvernorat: 'Monastir',
-    description: 'Maison avec piscine à Monastir.',
-    price: '320 000 TND',
-    type: 'maison',
-    },
-    {
-    id: 10,
-    title: 'Terrain à Tataouine',
-    latitude: 32.9297,
-    longitude: 10.4518,
-    gouvernorat: 'Tataouine',
-    description: 'Grand terrain dans le sud tunisien.',
-    price: '60 000 TND',
-    type: 'terrain',
-    },
-    {
-    id: 11,
-    title: 'Appartement à Ariana',
-    latitude: 36.8665,
-    longitude: 10.1647,
-    gouvernorat: 'Ariana',
-    description: 'Appartement familial à Ariana.',
-    price: '175 000 TND',
-    type: 'appartement',
-    },
-    {
-    id: 12,
-    title: 'Local à Gafsa',
-    latitude: 34.4250,
-    longitude: 8.7842,
-    gouvernorat: 'Gafsa',
-    description: 'Local spacieux au centre-ville.',
-    price: '210 000 TND',
-    type: 'local',
-    },
-
-  ];
-
   useEffect(() => {
-    setLoading(false);
+    // Remplace par l'IP de ton serveur / port
+    axios.get('http://192.168.1.14:3000/api/properties')
+      .then(res => {
+        // Transforme les propriétés pour ajouter lat/lng
+        // Assure-toi que tes données contiennent latitude et longitude (ou gmaps_link_property à parser)
+        const propsWithCoords = res.data.map(p => {
+          // Supposons que tu as latitude et longitude en base, sinon parse gmaps_link_property
+          // Exemple de parsing si gmaps_link_property = "https://maps.google.com/?q=36.8065,10.1815"
+          let latitude = 0;
+          let longitude = 0;
+          if (p.gmaps_link_property) {
+            const match = p.gmaps_link_property.match(/q=([\d.-]+),([\d.-]+)/);
+            if (match) {
+              latitude = parseFloat(match[1]);
+              longitude = parseFloat(match[2]);
+            }
+          }
+
+          return {
+            id: p.id_property,
+            title: p.name_property,
+            latitude,
+            longitude,
+            gouvernorat: p.name_governorate,
+            description: p.description_property,
+            price: p.price_property.toLocaleString() + ' TND',
+            type: p.type_property.toLowerCase(), // Pour matcher avec les icones
+          };
+        });
+
+        setProperties(propsWithCoords);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Erreur fetch propriétés:', err);
+        setLoading(false);
+      });
   }, []);
 
   const handleMarkerPress = (property) => {
     setSelectedProperty(property);
-    if (mapRef.current) {
+    if (mapRef.current && property.latitude && property.longitude) {
       mapRef.current.animateToRegion(
         {
           latitude: property.latitude,
@@ -187,24 +99,26 @@ const MapScreen = () => {
           }}
           mapType="satellite"
         >
-          {properties.map((property) => (
-            <Marker
-              key={property.id}
-              coordinate={{
-                latitude: property.latitude,
-                longitude: property.longitude,
-              }}
-              onPress={() => handleMarkerPress(property)}
-            >
-              <View style={styles.iconContainer}>
-                <Image
-                  source={getIconByType(property.type)}
-                  style={styles.iconImage}
-                  resizeMode="contain"
-                />
-              </View>
-            </Marker>
-          ))}
+          {properties.map((property) =>
+            property.latitude && property.longitude ? (
+              <Marker
+                key={property.id}
+                coordinate={{
+                  latitude: property.latitude,
+                  longitude: property.longitude,
+                }}
+                onPress={() => handleMarkerPress(property)}
+              >
+                <View style={styles.iconContainer}>
+                  <Image
+                    source={getIconByType(property.type)}
+                    style={styles.iconImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              </Marker>
+            ) : null
+          )}
         </MapView>
       )}
 
@@ -223,13 +137,8 @@ const MapScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-    width: '100%',
-  },
+  container: { flex: 1 },
+  map: { flex: 1, width: '100%' },
   iconContainer: {
     width: 40,
     height: 40,
@@ -244,10 +153,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 4,
   },
-  iconImage: {
-    width: 28,
-    height: 28,
-  },
+  iconImage: { width: 28, height: 28 },
   modalContent: {
     position: 'absolute',
     bottom: 20,
@@ -262,20 +168,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalDescription: {
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  modalPrice: {
-    fontSize: 16,
-    color: 'green',
-    marginBottom: 15,
-  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  modalDescription: { fontSize: 14, marginBottom: 10 },
+  modalPrice: { fontSize: 16, color: 'green', marginBottom: 15 },
   closeButton: {
     backgroundColor: '#007BFF',
     paddingVertical: 8,
@@ -283,10 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'flex-end',
   },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 14,
-  },
+  closeButtonText: { color: 'white', fontSize: 14 },
 });
 
 export default MapScreen;
