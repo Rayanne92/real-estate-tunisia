@@ -1,199 +1,140 @@
-// screens/PropertyListScreen.js
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-
-const gouvernorats = {
-  Tunis: ['Tunis', 'La Marsa', 'Le Bardo'],
-  Sousse: ['Sousse', 'Hammam Sousse', 'Akouda'],
-  Sfax: ['Sfax Ville', 'Sakiet Ezzit', 'Thyna'],
-  Nabeul: ['Nabeul', 'Hammamet', 'Dar Chaabane'],
-};
-
-const biensImmobiliers = [
-  {
-    id: '1',
-    type: 'Maison',
-    prix: 150000,
-    surface: 120,
-    localisation: 'Tunis',
-    gouvernorat: 'Tunis',
-    lienAnnonce: 'https://example.com/annonce1',
-  },
-  {
-    id: '2',
-    type: 'Terrain',
-    prix: 80000,
-    surface: 500,
-    localisation: 'Sousse',
-    gouvernorat: 'Sousse',
-    lienAnnonce: 'https://example.com/annonce2',
-  },
-  {
-    id: '3',
-    type: 'Local',
-    prix: 200000,
-    surface: 80,
-    localisation: 'Sfax Ville',
-    gouvernorat: 'Sfax',
-    lienAnnonce: 'https://example.com/annonce3',
-  },
-  {
-    id: '4',
-    type: 'Appartement',
-    prix: 120000,
-    surface: 100,
-    localisation: 'Hammamet',
-    gouvernorat: 'Nabeul',
-    lienAnnonce: 'https://example.com/annonce4',
-  },
-  {
-    id: '5',
-    type: 'Maison',
-    prix: 180000,
-    surface: 150,
-    localisation: 'La Marsa',
-    gouvernorat: 'Tunis',
-    lienAnnonce: 'https://example.com/annonce5',
-  },
-];
+import axios from 'axios';
 
 const PropertyListScreen = () => {
-  const [selectedGouv, setSelectedGouv] = useState(null);
-  const [selectedVille, setSelectedVille] = useState(null);
-  const [minPrix, setMinPrix] = useState('');
-  const [maxPrix, setMaxPrix] = useState('');
-  const [minSurface, setMinSurface] = useState('');
-  const [maxSurface, setMaxSurface] = useState('');
   const [gouvOpen, setGouvOpen] = useState(false);
   const [villeOpen, setVilleOpen] = useState(false);
-  const [filteredBiens, setFilteredBiens] = useState(biensImmobiliers);
+  const [typeOpen, setTypeOpen] = useState(false);
 
+  const [selectedGouv, setSelectedGouv] = useState(null);
+  const [selectedVille, setSelectedVille] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
+
+  const [governorates, setGovernorates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch governorates on mount
   useEffect(() => {
-    filterBiens();
-  }, [selectedGouv, selectedVille, minPrix, maxPrix, minSurface, maxSurface]);
+    axios.get('http://192.168.1.14:3000/api/governorates')
+      .then(res => setGovernorates(res.data))
+      .catch(err => console.error(err));
+  }, []);
 
-  const filterBiens = () => {
-    const result = biensImmobiliers.filter((item) => {
-      const matchGouv = selectedGouv ? item.gouvernorat === selectedGouv : true;
-      const matchVille = selectedVille ? item.localisation === selectedVille : true;
-      const matchMinPrix = minPrix ? item.prix >= parseInt(minPrix) : true;
-      const matchMaxPrix = maxPrix ? item.prix <= parseInt(maxPrix) : true;
-      const matchMinSurface = minSurface ? item.surface >= parseInt(minSurface) : true;
-      const matchMaxSurface = maxSurface ? item.surface <= parseInt(maxSurface) : true;
+  // Fetch cities when governorate is selected
+  useEffect(() => {
+    if (selectedGouv) {
+      axios.get(`http://192.168.1.14:3000/api/cities/${selectedGouv}`)
+        .then(res => setCities(res.data))
+        .catch(err => console.error(err));
+    } else {
+      setCities([]);
+      setSelectedVille(null);
+    }
+  }, [selectedGouv]);
 
-      return (
-        matchGouv &&
-        matchVille &&
-        matchMinPrix &&
-        matchMaxPrix &&
-        matchMinSurface &&
-        matchMaxSurface
-      );
-    });
-    setFilteredBiens(result);
-  };
+  // Fetch properties when filters change
+  useEffect(() => {
+    setLoading(true);
+    let query = `http://192.168.1.14:3000/api/properties?`;
+    if (selectedGouv) query += `id_governorate=${selectedGouv}&`;
+    if (selectedVille) query += `id_city=${selectedVille}&`;
+    if (selectedType) query += `type=${selectedType}&`;
+
+    axios.get(query)
+      .then(res => {
+        setProperties(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [selectedGouv, selectedVille, selectedType]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Liste des Biens Immobiliers</Text>
+      <Text style={styles.title}>Biens Immobiliers</Text>
 
-      {/* Filtre Gouvernorat */}
-      <Text style={styles.label}>Gouvernorat</Text>
+      {/* Gouvernorat */}
       <DropDownPicker
         open={gouvOpen}
         setOpen={setGouvOpen}
         value={selectedGouv}
         setValue={setSelectedGouv}
-        items={Object.keys(gouvernorats).map((gouv) => ({
-          label: gouv,
-          value: gouv,
+        items={governorates.map((g) => ({
+          label: g.name_governorate,
+          value: g.id_governorate,
         }))}
         placeholder="Choisir un gouvernorat"
+        zIndex={3000}
+        zIndexInverse={1000}
         style={styles.dropdown}
-        dropDownContainerStyle={{ zIndex: 1000 }}
       />
 
-      {/* Filtre Ville */}
-      <Text style={styles.label}>Ville</Text>
+      {/* Ville */}
       <DropDownPicker
         open={villeOpen}
         setOpen={setVilleOpen}
         value={selectedVille}
         setValue={setSelectedVille}
-        items={
-          selectedGouv
-            ? gouvernorats[selectedGouv].map((ville) => ({
-                label: ville,
-                value: ville,
-              }))
-            : []
-        }
+        items={cities.map((c) => ({
+          label: c.name_city,
+          value: c.id_city,
+        }))}
         placeholder="Choisir une ville"
-        style={styles.dropdown}
-        dropDownContainerStyle={{ zIndex: 900 }}
         disabled={!selectedGouv}
+        zIndex={2000}
+        zIndexInverse={2000}
+        style={styles.dropdown}
       />
 
-      {/* Filtre Prix */}
-      <View style={styles.filterRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Prix min"
-          keyboardType="numeric"
-          value={minPrix}
-          onChangeText={setMinPrix}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Prix max"
-          keyboardType="numeric"
-          value={maxPrix}
-          onChangeText={setMaxPrix}
-        />
-      </View>
-
-      {/* Filtre Surface */}
-      <View style={styles.filterRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Surface min"
-          keyboardType="numeric"
-          value={minSurface}
-          onChangeText={setMinSurface}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Surface max"
-          keyboardType="numeric"
-          value={maxSurface}
-          onChangeText={setMaxSurface}
-        />
-      </View>
-
-      {/* Liste filtrée */}
-      <FlatList
-        data={filteredBiens}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card}>
-            <Text style={styles.cardTitle}>{item.type}</Text>
-            <Text>Prix : {item.prix.toLocaleString()} TND</Text>
-            <Text>Surface : {item.surface} m²</Text>
-            <Text>Localisation : {item.localisation}</Text>
-            <Text style={{ color: 'blue' }}>{item.lienAnnonce}</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>Aucun bien trouvé.</Text>}
+      {/* Type de bien */}
+      <DropDownPicker
+        open={typeOpen}
+        setOpen={setTypeOpen}
+        value={selectedType}
+        setValue={setSelectedType}
+        items={[
+          { label: 'Maison', value: 'Maison' },
+          { label: 'Appartement', value: 'Appartement' },
+          { label: 'Terrain', value: 'Terrain' },
+          { label: 'Local', value: 'Local' },
+        ]}
+        placeholder="Choisir un type"
+        zIndex={1000}
+        zIndexInverse={3000}
+        style={styles.dropdown}
       />
+
+      {/* Liste */}
+      {loading ? (
+        <ActivityIndicator size="large" style={{ marginTop: 30 }} />
+      ) : (
+        <FlatList
+          data={properties}
+          keyExtractor={(item) => item.id_property.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.card}>
+              <Text style={styles.cardTitle}>{item.name_property}</Text>
+              <Text>{item.type_property} • {item.surface_property} m²</Text>
+              <Text>{item.price_property.toLocaleString()} TND</Text>
+              <Text>{item.description_property}</Text>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>Aucun bien trouvé.</Text>}
+        />
+      )}
     </View>
   );
 };
@@ -205,34 +146,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    marginBottom: 15,
-    textAlign: 'center',
     fontWeight: 'bold',
-  },
-  label: {
-    fontWeight: '600',
-    marginTop: 10,
+    textAlign: 'center',
+    marginBottom: 15,
   },
   dropdown: {
     marginBottom: 10,
   },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 8,
-    marginHorizontal: 5,
-    borderRadius: 5,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
   card: {
-    padding: 15,
     backgroundColor: '#fff',
-    marginBottom: 10,
+    padding: 15,
     borderRadius: 6,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -242,7 +167,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
 });
 
