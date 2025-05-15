@@ -1,55 +1,41 @@
-// screens/ContactScreen.js
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-
-// Si tu veux utiliser Axios, tu peux l'installer avec 'npm install axios' ou 'yarn add axios'
-// import axios from 'axios';
+import axios from 'axios';
 
 const ContactScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    // Vérification si tous les champs sont remplis
     if (!name || !email || !message) {
       Alert.alert('Erreur', 'Tous les champs sont requis');
       return;
     }
 
-    // Créer un objet avec les données à envoyer
-    const formData = {
-      name,
-      email,
-      message,
-    };
+    setLoading(true);
 
     try {
-      // Envoyer les données via Fetch (ou Axios) à ton backend
-      const response = await fetch('https://ton-api-url.com/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const response = await axios.post('http://192.168.1.14:3000/api/contact', {
+        name,
+        email,
+        message,
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        // Si la réponse est correcte, on alerte l'utilisateur
+      if (response.status === 200) {
         Alert.alert('Succès', 'Votre message a été envoyé avec succès !');
-        // Réinitialiser le formulaire
         setName('');
         setEmail('');
         setMessage('');
       } else {
-        // Si l'API renvoie une erreur
-        Alert.alert('Erreur', result.message || 'Une erreur est survenue.');
+        Alert.alert('Erreur', 'Une erreur est survenue, veuillez réessayer.');
       }
     } catch (error) {
-      // En cas d'erreur de connexion
       Alert.alert('Erreur', 'Impossible d\'envoyer le message, vérifiez votre connexion.');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +57,8 @@ const ContactScreen = () => {
         placeholder="Entrez votre email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <Text style={styles.label}>Message</Text>
@@ -82,7 +70,7 @@ const ContactScreen = () => {
         multiline
       />
 
-      <Button title="Envoyer" onPress={handleSubmit} />
+      <Button title={loading ? 'Envoi en cours...' : 'Envoyer'} onPress={handleSubmit} disabled={loading} />
     </View>
   );
 };
