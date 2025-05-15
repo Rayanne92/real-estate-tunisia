@@ -28,7 +28,12 @@ npm install react-native-vector-icons
 | **Type de bien**         | Type de bien immobilier (ex. "Appartement", "Villa", "Maison")                    |
 | **Gouvernorat**          | Le gouvernorat où se trouve le bien (ex. "Tunis", "Ariana")                       |
 | **Ville**                | La ville où se trouve le bien (ex. "Tunis", "La Marsa")                           |
-| **Localisation Google Maps** | Lien vers la localisation exacte sur Google Maps (ex. "[Localisation](https://www.google.com/maps?q=location)") |
+| **Localisation Google Maps** | Lien vers la localisation exacte sur Google Maps (ex. "[Localisation](https://www.google.com/maps?
+q=location)") |
+| **Titre**                | Le terrain possède un titre bleu / pas titre bleu / héritage (en arabe worfa)                          |
+| **Permis de construire**                | Oui / Non / En cours                           |
+
+
 
 | **Gouvernorat** | **Villes**                                                         |
 |-----------------|--------------------------------------------------------------------|

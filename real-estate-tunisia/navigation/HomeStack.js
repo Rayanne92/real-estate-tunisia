@@ -4,6 +4,9 @@ import HomeScreen from '../screens/HomeScreen';
 import AddPropertyScreen from '../screens/AddPropertyScreen';
 import PriceCheckScreen from '../screens/PriceCheckScreen';
 
+import PriceTrackingScreen from '../screens/PriceTrackingScreen';
+
+
 const Stack = createNativeStackNavigator();
 
 const HomeStack = () => (
@@ -11,6 +14,13 @@ const HomeStack = () => (
     <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Accueil' }} />
     <Stack.Screen name="AddProperty" component={AddPropertyScreen} options={{ title: 'Ajouter un bien' }} />
     <Stack.Screen name="PriceCheck" component={PriceCheckScreen} options={{ title: 'Vérifier un prix' }} />
+
+    <Stack.Screen
+        name="PriceTracking"
+        component={PriceTrackingScreen}
+        options={{ title: "Suivi des prix" }}
+    />
+
   </Stack.Navigator>
 );
 
