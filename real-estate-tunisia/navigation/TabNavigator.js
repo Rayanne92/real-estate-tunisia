@@ -6,7 +6,7 @@ import PropertyStack from './PropertyStack';
 import MapStack from './MapStack';
 import ContactStack from './ContactStack';
 import AddPropertyStack from './AddPropertyStack';
-import { Ionicons } from '@expo/vector-icons'; // ou ton package d’icônes
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 

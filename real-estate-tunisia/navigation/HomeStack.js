@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 
 const HomeStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Accueil' }} />
+    <Stack.Screen name="HomeMain" component={HomeScreen} options={{ title: 'Real Estate Tunisia' }} />
     <Stack.Screen name="AddProperty" component={AddPropertyScreen} options={{ title: 'Ajouter un bien' }} />
     <Stack.Screen name="PriceCheck" component={PriceCheckScreen} options={{ title: 'Vérifier un prix' }} />
 
