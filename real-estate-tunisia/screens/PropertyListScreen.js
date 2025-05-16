@@ -64,7 +64,6 @@ const PropertyListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Biens Immobiliers</Text>
 
       {/* Gouvernorat */}
       <DropDownPicker
